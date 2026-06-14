@@ -1,4 +1,4 @@
-﻿Console.WriteLine("Hello, World!");
+﻿using System.Diagnostics;
  string? region = null;
 string? upperRegion = region?.ToUpper();
 Console.WriteLine($"Region (conditional): {upperRegion}");
@@ -29,7 +29,7 @@ var duplicate = new EnrollmentRecord("STU-001", "CS-401", enrollment.EnrolledAt)
 Console.WriteLine($"Same data? {enrollment == duplicate}"); 
 var course = new Course { Code = "CS-401", Title = "Advanced C#", Capacity = 30 };
 Console.WriteLine($"Course: {course.Title} (Capacity: {course.Capacity})");
-Invalid capacity — should throw
+//Invalid capacity — should throw
 try
 {
 course.Capacity = -5;
@@ -126,7 +126,7 @@ Console.WriteLine("\n--- Academic Standing Report ---");
 foreach (var group in standingGroups)
 {
     Console.WriteLine($"\n{group.Key} ({group.Count()}):");
-    foreach (var s in group)
+    foreach (var student in group)
     {
         Console.WriteLine($"  {s.Name} GPA: {s.GPA}");
     }
@@ -136,7 +136,7 @@ string[] frontendCourses = ["TypeScript", "Angular"];
 string[] allCourses = [.. backendCourses, .. frontendCourses, "Capstone"];
 
 Console.WriteLine($"\nFull curriculum: {string.Join(", ", allCourses)}");
-using System.Diagnostics;
+
 
 // Local functions
 async Task<Student> FetchStudentAsync(string id)
@@ -189,11 +189,10 @@ string[] courseCodes = ["CRS-101", "CRS-201", "CRS-301"];
 var studentTasks = studentIds.Select(id => FetchStudentAsync(id));
 var courseTasks = courseCodes.Select(code => FetchCourseAsync(code));
 
-Student[] students = await Task.WhenAll(studentTasks);
+Student[] loadedStudents = await Task.WhenAll(studentTasks);;
 Course[] courses = await Task.WhenAll(courseTasks);
 
-Console.WriteLine($"\nLoaded {students.Length} students and {courses.Length} courses in {sw.ElapsedMilliseconds}ms");
-foreach (var s in students)
+Console.WriteLine($"\nLoaded {loadedStudents.Length} students and {courses.Length} courses in {sw.ElapsedMilliseconds}ms");
 {
     Console.WriteLine($"  {s.Name} GPA: {s.GPA}");
 }
@@ -236,12 +235,12 @@ catch (CapacityReachedException ex)
     Console.WriteLine($"  Message: {ex.Message}");
 }
 sw.Stop();
-decimal classAverage = students.Length > 0
-? students.Average(s => s.GPA)
-: 0m;
+decimal classAverage = loadedStudents.Length > 0
+    ? loadedStudents.Average(s => s.GPA)
+    : 0m;
 // Print the final report
 Console.WriteLine("\n========== ENROLLMENT SUMMARY ==========");
-Console.WriteLine($"Total students loaded: {students.Length}");
+Console.WriteLine($"Total students loaded: {loadedStudents.Length}");
 Console.WriteLine($"Successful enrollments: {enrollments.Count}");
 Console.WriteLine($"Failed enrollments: {failures.Count}");
 Console.WriteLine($"Class average GPA: {classAverage:F2}");
